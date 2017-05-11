@@ -1,0 +1,129 @@
+library(rvest)
+library(magrittr)
+library(stringr)
+library(plyr)
+library(dplyr)
+library(tidyr)
+library(purrr)
+library(lubridate)
+library(data.table)
+
+#url <- "http://www.pro-football-reference.com/players/"
+
+get_and_clean_table <- function(player, plyr_num) {
+  #player <<- readline(prompt = "Player:")
+  url <- "http://www.sports-reference.com/cfb/players/"
+  player <- tolower(player)
+  fst <- substr(player, 0,1)
+    
+  full_url <- paste(url,fst,'-',lst,'-1',".html", sep = "")
+  
+  print(full_url)
+  
+  
+  http://www.pro-football-reference.com/players/W/WinsJa00.htm
+  
+  url_try <- try(get_name <- read_html(full_url) %>%
+                   html_node("h1") %>%
+                   html_text() %>%
+                   substr(0,nchar(.)), silent = TRUE)
+  
+  if(class(url_try)=="try-error"){
+    web_data <- "skip"
+  }
+  else{
+  tbl_chk <- try(web_data <- read_html(full_url) %>%
+                     html_table(header = TRUE) %>%
+                     as.data.frame(), silent = TRUE)
+  
+  if(str_sub(get_name,-1) == " "){
+    get_name <- substr(get_name, 0, nchar(get_name) - 1)
+  }
+   
+  c_flag <- try(
+  if(get_name == player){
+    
+      
+      web_data <- read_html(full_url) %>%
+      html_table(header = TRUE) %>%
+      as.data.frame()
+    
+    colnames(web_data) <- web_data[1, ] 
+    web_data <- web_data[-1, ]
+    
+    
+    name_list$First4AV
+    
+    
+    
+    plyr_name <- c(rep(plyr_id[plyr_num], nrow(web_data)))
+    
+    
+    web_data <- cbind.data.frame(plyr_name, web_data)
+  })
+  if(length(c_flag) < 5){
+    web_data <- "skip"
+  }}
+  
+  return(web_data)
+  }
+  
+df <- read.csv(file = "nfl_draft.csv")
+
+players <- as.character(df$Player_Id)
+
+plyr_list <- data.frame()
+
+QB_list <- data.frame()
+
+RB_list <- data.frame()
+
+WR_TE_list <- data.frame()
+
+Def_list <- data.frame()
+
+nofit_plyrs <- list()
+
+for (i in 1:8435){
+
+  player <- players[i]
+  
+  n_tbl <- get_and_clean_table(player, num_p)
+  
+  if(n_tbl == "skip"){
+    print(paste(player, "Skipped", sep = " "))
+  }
+  else{
+  for (i in 1:nrow(n_tbl)){
+  
+    row_flag <- try( if(n_tbl$Pos[i] == "RB"){
+    RB_list <- rbind(RB_list, n_tbl[i,])
+    }
+    else if(n_tbl$Pos[i] == "QB"){
+    
+    QB_list <- rbind(QB_list, n_tbl[i,])
+    }
+    else if(n_tbl$Pos[i] %in% c("WR","TE")){
+      WR_TE_list <- rbind(WR_TE_list, n_tbl[i,])
+    }
+    else if(n_tbl$Pos[i] %in% c("DE","S","LB","DL","DT","CB","DB")){
+     Def_list <- rbind(Def_list, n_tbl[i,])
+    }, silent = TRUE)
+    if(class(row_flag)=="try-error"){
+      nofit_plyrs <- append(nofit_plyrs, player)
+    }
+
+  }}
+  
+}
+
+ write.csv(x = name_list, file = "short_draft_csv")
+
+#n_tbl$Year <- substr(n_tbl$Year,0,4)
+
+#g_tbl <- n_tbl[grep(pattern = "[0-9]|[C-c]", x = n_tbl$Year),]
+
+#full_url <- "http://www.pro-football-reference.com/players/P/PaytWa00.htm"
+
+#player_ID <- regexpr(pattern = "[A-Z][a-z]{2,}[A-Z].{1,}[0-9][0-9]", text = full_url)
+#player_ID <- regmatches(x = full_url, m = player_ID)
